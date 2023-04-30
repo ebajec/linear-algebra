@@ -1,26 +1,36 @@
 #include <iostream>
 #include <vector>
-#include "matrix.hpp"
+#include "matrix.h"
 
 using namespace std;
 
-int main() {
-	
-	vector<vector<double>> arr1 = {
-		{1,0},
-		{0,2},
-		{0,0}
-	};
+int main()
+{
+	vector<vector<double>> arr = {
+		{1, 0, 2},
+		{2, 0, 1},
+		{3, 1, 0}};
 
-	vector<vector<double>> arr2 = {
-		{0,2,22},
-		{0,0,1}
-	};
+	const Matrix<3, 3> A(arr);
 
-	Matrix<3,2> A(arr1);
-	Matrix<2,3> B(arr2);
+	Matrix<2, 3> B = {
+		0, 2, 1,
+		0, 1, 0};
 
-	(A*B).print();
+	Matrix<3, 2> C = {
+		1, 1,
+		1, 1,
+		1, 1};
+
+	C.print();
+	B.print();
+
+	auto X = C * B;
+
+	X.print();
+	B.transpose().print();
+
+	system("pause");
 
 	return 0;
 }
