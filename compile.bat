@@ -1,1 +1,1 @@
-g++ -o run.exe main.cpp
+g++ -o run.exe lib/main.cpp
