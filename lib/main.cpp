@@ -29,8 +29,9 @@ int main()
 
 	X.print();
 	B.transpose().print();
+	std::cout << det_laplace(X);
 
-	system("pause");
+	//system("pause");
 
 	return 0;
 }

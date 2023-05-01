@@ -2,8 +2,9 @@
 #define MATRIX_HPP
 #include <initializer_list>
 #include <vector>
+#include "math.h"
 #include <iostream>
-
+#include <cassert>
 #include "matrix.h"
 
 using namespace std;
@@ -36,7 +37,7 @@ Matrix<m, n, F>::Matrix(F *new_data)
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(vector<vector<F>> arr)
+Matrix<m, n, F>::Matrix(const vector<vector<F>> &arr)
 {
 	if (arr.size() != m || arr[0].size() != n)
 	{
@@ -172,6 +173,7 @@ Matrix<m, 1, F> Matrix<m, n, F>::col(int j) const
 template <int m, int n, typename F>
 Matrix<m - 1, n - 1, F> Matrix<m, n, F>::submatrix(int row, int col) const
 {
+	assert((row < m) && (col < n));
 	Matrix<m - 1, n - 1, F> new_mat;
 	F *new_data = new_mat.data();
 
@@ -200,8 +202,8 @@ Matrix<n, m, F> Matrix<m, n, F>::transpose() const
 	for (int i = 0; i < m; i++)
 	{
 		for (int j = 0; j < n; j++)
-		{	
-			new_mat[0][j*m+i] = mem[i * n + j];
+		{
+			new_mat[0][j * m + i] = mem[i * n + j];
 		}
 	}
 
@@ -210,10 +212,22 @@ Matrix<n, m, F> Matrix<m, n, F>::transpose() const
 
 /******NON MEMBER FUNCTIONS*****/
 
+/*Compute determinant via laplacian expansion*/
 template <int n, typename F>
-F det(Matrix<n, n, F> mat)
+F det_laplace(Matrix<n, n, F> A)
 {
-	return 69;
+	if (n == 1)
+	{
+		return A[0][0];
+	}
+
+	F value = 0;
+	for (int i = 0; i < n; i++)
+	{
+		value += pow(-1, i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
+	}
+
+	return value;
 }
 
 #endif

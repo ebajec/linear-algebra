@@ -15,7 +15,7 @@ protected:
 public:
     Matrix();
     Matrix(F *new_data);
-    Matrix(vector<vector<F>> arr);
+    Matrix(const vector<vector<F>>& arr);
     Matrix(const initializer_list<F> &arr);
 
     inline F *operator[](int i) { return mem + i * m; }
@@ -54,7 +54,7 @@ public:
 /*****NON MEMBER STUFF*****/
 
 template <int n, typename F>
-F det(Matrix<n, n, F> mat);
+F det_laplace(Matrix<n, n, F> A);
 
 #include "matrix.hpp"
 
