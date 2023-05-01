@@ -20,7 +20,7 @@ int main() {
 	Matrix<3,2> A(arr1);
 	Matrix<2,3> B(arr2);
 
-	(A*B).print();
+	(A - A).print();
 
 	return 0;
 }

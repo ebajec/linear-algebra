@@ -34,6 +34,8 @@ public:
 
 //implementations
 
+//constructors
+
 template<int m, int n, typename F> 
 Matrix<m,n,F>::Matrix() {
 		for (int i = 0; i < m; i++) {
@@ -68,6 +70,8 @@ Matrix<m,n,F>::Matrix(vector<vector<F>> arr) {
 
 }
 
+//operators
+
 template<int m, int n, typename F>
 template<int l>
 Matrix<m,l,F> Matrix<m,n,F>::operator * (Matrix<n,l,F> const& other) const {
@@ -88,16 +92,37 @@ Matrix<m,l,F> Matrix<m,n,F>::operator * (Matrix<n,l,F> const& other) const {
 	return Matrix<m,l,F>(new_data);
 }
 
+Matrix<m,l,F> Matrix<m,n,F>::operator * (F const& c) const {
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			this->data[i][j] *= c;
+		}
+	}
+}
+
 template<int m, int n, typename F>
 Matrix<m,n,F> Matrix<m,n,F>::operator + (Matrix<m,n,F> const& other) const {
-	auto add = [&] (int i, int j) {
-		this->data[i][j] += other[i][j];
-	};
-
-	loop(add);
-
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			this->data[i][j] += other[i][j];
+		}
+	}
+	
 	return *this;
 }
+
+template<int m, int n, typename F>
+Matrix<m,n,F> Matrix<m,n,F>::operator - (Matrix<m,n,F> const& other) const {
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			this->data[i][j] -= other[i][j];
+		}
+	}
+	
+	return *this;
+}
+
+//other
 
 template<int m, int n, typename F> 
 template<class func>
