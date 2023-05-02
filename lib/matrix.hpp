@@ -15,6 +15,15 @@ Matrix<m, n, F>::Matrix()
 }
 
 template <int m, int n, typename F>
+Matrix<m, n, F>::Matrix(const Matrix<m, n, F> &other)
+{
+	for (int i = 0; i < m * n; i++)
+	{
+		mem[i] = other[0][i];
+	}
+}
+
+template <int m, int n, typename F>
 Matrix<m, n, F>::Matrix(const initializer_list<F> &arr)
 {
 	int i = 0;
@@ -111,6 +120,26 @@ Matrix<m, l, F> Matrix<m, n, F>::operator*(const Matrix<n, l, F> &B) const
 }
 
 template <int m, int n, typename F>
+Matrix<m, n, F> Matrix<m, n, F>::operator^(const int &pow) const
+{
+	if (m != n)
+	{
+		throw std::invalid_argument("Matrix must be square");
+	}
+	if ( pow < 0) {
+		throw std::invalid_argument("Negative powers are not always defined");
+	}
+
+	Matrix<m,n,F> new_mat = Matrix<m,n,F>::id();
+
+	for (int i = 0; i < pow; i++) {
+		new_mat = new_mat * (*this);
+	}
+
+	return new_mat;
+}
+
+template <int m, int n, typename F>
 bool Matrix<m, n, F>::operator==(const Matrix<m, n, F> &other) const
 {
 	for (int i = 0; i < m * n; i++)
@@ -131,7 +160,7 @@ bool Matrix<m, n, F>::operator!=(const Matrix<m, n, F> &other) const
 
 // other
 template <int m, int n, typename F>
-void Matrix<m, n, F>::print()
+void Matrix<m, n, F>::print() const
 {
 	for (int i = 0; i < m * n; i++)
 	{
@@ -174,7 +203,14 @@ template <int m, int n, typename F>
 Matrix<m - 1, n - 1, F> Matrix<m, n, F>::submatrix(int row, int col) const
 {
 	assert((row < m) && (col < n));
+
 	Matrix<m - 1, n - 1, F> new_mat;
+
+	if (m == 1 || n == 1)
+	{
+		return new_mat;
+	}
+
 	F *new_data = new_mat.data();
 
 	int k = 0;
@@ -209,25 +245,41 @@ Matrix<n, m, F> Matrix<m, n, F>::transpose() const
 
 	return new_mat;
 }
+ 
 
 /******NON MEMBER FUNCTIONS*****/
+
+template <int m, int n, typename F>
+Matrix<m, n, F> gauss_elim(Matrix<m, n, F> A)
+{
+	F *data = A[0];
+	auto row_add = [&, data](int r1, int r2, F c)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			data[0];
+		}
+	};
+}
 
 /*Compute determinant via laplacian expansion*/
 template <int n, typename F>
 F det_laplace(Matrix<n, n, F> A)
 {
-	if (n == 1)
+	if (n <= 1)
 	{
 		return A[0][0];
 	}
-
-	F value = 0;
-	for (int i = 0; i < n; i++)
+	else
 	{
-		value += pow(-1, i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
-	}
+		F value = 0;
 
-	return value;
+		for (int i = 0; i < n; i++)
+		{
+			value += pow(-1, i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
+		}
+		return value;
+	}
 }
 
 #endif

@@ -2,7 +2,7 @@
 #include <vector>
 #include "matrix.h"
 
-using namespace std;
+using namespace std; 
 
 int main()
 {
@@ -25,11 +25,12 @@ int main()
 	C.print();
 	B.print();
 
-	auto X = C * B;
-
-	X.print();
 	B.transpose().print();
-	std::cout << det_laplace(X);
+
+	(A^6).print();
+
+	std::cout << det_laplace(A);
+
 
 	//system("pause");
 
