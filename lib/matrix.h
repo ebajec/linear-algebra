@@ -19,16 +19,30 @@ public:
     Matrix(const vector<vector<F>> &arr);
     Matrix(const initializer_list<F> &arr);
 
-    inline F *operator[](int i) { return mem + i * m; }
+    inline F *operator[](int i) { return mem + i * n; }
     inline const F *operator[](int i) const { return mem + i * m; }
     Matrix<m, n, F> operator+(const Matrix<m, n, F> &B) const;
     Matrix<m, n, F> operator-(const Matrix<m, n, F> &B) const;
-    Matrix<m, n, F> operator*(const F &c);
+    Matrix<m, n, F> operator*(const F &c) const;
     template <int l>
     Matrix<m, l, F> operator*(const Matrix<n, l, F> &B) const;
     Matrix<m, n, F> operator^(const int &pow) const;
+    /*Creates a new matrix by placing the two inputs side by side.*/
+    template <int l>
+    Matrix<m, n + l, F> operator|(const Matrix<m, l, F> &other) const;
     bool operator==(const Matrix<m, n, F> &other) const;
     bool operator!=(const Matrix<m, n, F> &other) const;
+
+    template <typename T>
+    operator Matrix<m, n, T>() const
+    {
+        T new_data[m * n];
+        for (int i = 0; i < m * n; i++)
+        {
+            new_data[i] = static_cast<T>(mem[i]);
+        }
+        return Matrix<m, n, T>(new_data);
+    }
 
     F *data() { return &(this->mem[0]); }
     void print() const;
@@ -38,21 +52,14 @@ public:
     Matrix<1, n, F> row(int i) const;
     Matrix<m, 1, F> col(int j) const;
     Matrix<m - 1, n - 1, F> submatrix(int i, int j) const;
-
     Matrix<n, m, F> transpose() const;
+    template <int k, int l>
+    Matrix<m + k, n + l, F> direct_sum(const Matrix<k, l, F> &other) const;
 
-    static Matrix<m,n,F> id()
-    {
-        static_assert(m == n, "Matrix must be square");
-        Matrix<m, n, F> identity;
-        for (int i = 0; i < n; i++)
-        {
-            identity[0][i * n + i] = 1;
-        }
-        return identity;
-    }
+    static Matrix<m, n, F> id();
 
-    // Don't really know how to avoid implementing this outside of class
+    // Don't really know how to avoid implementing this outside of class.
+    // This is so you can multiply from the right as well.
     friend Matrix<m, n, F> operator*(const F &c, const Matrix<m, n, F> &B)
     {
         F new_data[m * n];
@@ -66,6 +73,8 @@ public:
     }
 };
 
+// needed to do this for base cases if matrix size gets reduced in recursive
+// function call
 template <int n, typename F>
 class Matrix<0, n, F>
 {
@@ -101,9 +110,6 @@ public:
     F *data() { return nullptr; }
     Matrix<0, 0, F> submatrix(int i, int j) const { return Matrix<0, 0>(); }
 };
-
-// template <int m, int n, typename F = double, int >
-// class MatrixGenerator
 
 /*****NON MEMBER STUFF*****/
 
