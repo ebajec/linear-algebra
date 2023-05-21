@@ -298,6 +298,27 @@ Matrix<m + k, n + l, F> Matrix<m, n, F>::direct_sum(const Matrix<k, l, F> &other
 }
 
 template <int m, int n, typename F>
+template <int k, int l>
+Matrix<m*k, n*l, F> Matrix<m, n, F>::kronecker_prod(const Matrix<k, l, F> &B) const {
+	F new_data[m*k*n*l] = {0};
+
+	//pretend matrix 'A' is this instance
+	for (int a_row = 0; a_row < m; a_row++) {
+		for (int a_col = 0; a_col < n; a_col++) {
+			for (int b_row = 0; b_row < k; b_row++) {
+				for (int b_col = 0; b_col < l; b_col++) {
+
+					int index = a_row*k*n*l + b_row*n*l + a_col*l + b_col;
+					new_data[index] = this->mem[a_row*n + a_col]*B[b_row][b_col];
+				}
+			}
+		}
+	}
+
+	return Matrix<m*k,n*l>(new_data);
+}
+
+template <int m, int n, typename F>
 Matrix<m, n, F> Matrix<m, n, F>::id()
 {
 	static_assert(m == n, "Matrix must be square");

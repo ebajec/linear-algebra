@@ -20,7 +20,7 @@ public:
     Matrix(const initializer_list<F> &arr);
 
     inline F *operator[](int i) { return mem + i * n; }
-    inline const F *operator[](int i) const { return mem + i * m; }
+    inline const F *operator[](int i) const { return mem + i * n; }
     Matrix<m, n, F> operator+(const Matrix<m, n, F> &B) const;
     Matrix<m, n, F> operator-(const Matrix<m, n, F> &B) const;
     Matrix<m, n, F> operator*(const F &c) const;
@@ -55,6 +55,8 @@ public:
     Matrix<n, m, F> transpose() const;
     template <int k, int l>
     Matrix<m + k, n + l, F> direct_sum(const Matrix<k, l, F> &other) const;
+    template <int k, int l>
+    Matrix<m*k,n*l,F> kronecker_prod(const Matrix<k,l,F> &other) const;
 
     static Matrix<m, n, F> id();
 
