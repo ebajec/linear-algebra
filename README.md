@@ -1,6 +1,6 @@
 # linear-algebra
 
-Some basic linear algebra tools for general use.  Plan on including, matrix operations, inner product/projection stuff, eigen-things, 
+Some basic linear algebra tools for general use.  Plan on including matrix operations, inner product/projection stuff, eigen-things, 
 some matrix decompositions.  
 
 **compile.bat** Compiles and runs main.cpp.
