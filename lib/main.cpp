@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <complex>
 #include "matrix.h"
 
 using namespace std; 
@@ -13,23 +14,17 @@ int main()
 
 	const Matrix<3, 3> A(arr);
 
-	Matrix<2, 3> B = {
-		0, 2, 1,
-		0, 1, 0};
+	Matrix<3, 3,std::complex<double>> B = {
+		1.0 + 1i, 2         , 1,
+		0       , 2.0 - 3.0i, 1i,
+		1i      , 2.0       , 0};
 
 	Matrix<3, 2> C = {
 		1, 1,
 		1, 1,
 		1, 1};
-
-	C.print();
-	B.print();
-
-	B.transpose().print();
-
-	(A^6).print();
-
-	std::cout << det_laplace(A);
+	auto X = static_cast<Matrix<3,3,std::complex<double>>>(A);
+	(B*Matrix<3,3,std::complex<double>>::id()).print();
 
 
 	//system("pause");
