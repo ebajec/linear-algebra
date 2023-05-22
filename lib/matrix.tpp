@@ -11,12 +11,12 @@ using namespace std;
 
 // constructors
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix()
+matrix<m, n, F>::matrix()
 {
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(const Matrix<m, n, F> &other)
+matrix<m, n, F>::matrix(const matrix<m, n, F> &other)
 {
 	for (int i = 0; i < m * n; i++)
 	{
@@ -25,7 +25,7 @@ Matrix<m, n, F>::Matrix(const Matrix<m, n, F> &other)
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(const initializer_list<F> &arr)
+matrix<m, n, F>::matrix(const initializer_list<F> &arr)
 {
 	int i = 0;
 	for (F x : arr)
@@ -36,9 +36,9 @@ Matrix<m, n, F>::Matrix(const initializer_list<F> &arr)
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(F *new_data)
+matrix<m, n, F>::matrix(F *new_data)
 {
-	*this = Matrix();
+	*this = matrix();
 
 	for (int i = 0; i < m * n; i++)
 	{
@@ -47,7 +47,7 @@ Matrix<m, n, F>::Matrix(F *new_data)
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(const vector<vector<F>> &arr)
+matrix<m, n, F>::matrix(const vector<vector<F>> &arr)
 {
 	if (arr.size() != m || arr[0].size() != n)
 	{
@@ -66,9 +66,9 @@ Matrix<m, n, F>::Matrix(const vector<vector<F>> &arr)
 // operator overloads
 
 template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator+(const Matrix<m, n, F> &B) const
+matrix<m, n, F> matrix<m, n, F>::operator+(const matrix<m, n, F> &B) const
 {
-	Matrix<m, n, F> new_mat;
+	matrix<m, n, F> new_mat;
 	for (int i = 0; i < m * n; i++)
 	{
 		new_mat.mem[i] += this->mem[i] + B.mem[i];
@@ -78,9 +78,9 @@ Matrix<m, n, F> Matrix<m, n, F>::operator+(const Matrix<m, n, F> &B) const
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator-(const Matrix<m, n, F> &B) const
+matrix<m, n, F> matrix<m, n, F>::operator-(const matrix<m, n, F> &B) const
 {
-	Matrix<m, n, F> new_mat;
+	matrix<m, n, F> new_mat;
 	for (int i = 0; i < m * n; i++)
 	{
 		new_mat.mem[i] += this->mem[i] - B.mem[i];
@@ -90,9 +90,9 @@ Matrix<m, n, F> Matrix<m, n, F>::operator-(const Matrix<m, n, F> &B) const
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator*(F const &c) const
+matrix<m, n, F> matrix<m, n, F>::operator*(F const &c) const
 {
-	Matrix<m, n, F> new_mat;
+	matrix<m, n, F> new_mat;
 	for (int i = 0; i < m * n; i++)
 	{
 		new_mat.mem[i] = mem[i] * c;
@@ -103,9 +103,9 @@ Matrix<m, n, F> Matrix<m, n, F>::operator*(F const &c) const
 
 template <int m, int n, typename F>
 template <int l>
-Matrix<m, l, F> Matrix<m, n, F>::operator*(const Matrix<n, l, F> &B) const
+matrix<m, l, F> matrix<m, n, F>::operator*(const matrix<n, l, F> &B) const
 {
-	// need to do this because Matrix<n, l, F> is a different type and access
+	// need to do this because matrix<n, l, F> is a different type and access
 	// to private fields is not allowed.
 	F new_data[m * l] = {0};
 
@@ -119,12 +119,12 @@ Matrix<m, l, F> Matrix<m, n, F>::operator*(const Matrix<n, l, F> &B) const
 			}
 		}
 	}
-	return Matrix<m, l, F>(new_data);
+	return matrix<m, l, F>(new_data);
 }
 
 template <int m, int n, typename F>
 template <int l>
-inline Matrix<m, n + l, F> Matrix<m, n, F>::operator|(const Matrix<m, l, F> &other) const
+inline matrix<m, n + l, F> matrix<m, n, F>::operator|(const matrix<m, l, F> &other) const
 {
 	F new_data[m * (l + n)] = {0};
 
@@ -141,19 +141,19 @@ inline Matrix<m, n + l, F> Matrix<m, n, F>::operator|(const Matrix<m, l, F> &oth
 		}
 	}
 
-	return Matrix<m, n + l, F>(new_data);
+	return matrix<m, n + l, F>(new_data);
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator^(const int &pow) const
+matrix<m, n, F> matrix<m, n, F>::operator^(const int &pow) const
 {
-	static_assert(m == n, "Matrix must be square");
+	static_assert(m == n, "matrix must be square");
 	if (pow < 0)
 	{
 		throw std::invalid_argument("Negative matrix powers are not always defined");
 	}
 
-	Matrix<m, n, F> new_mat = Matrix<m, n, F>::id();
+	matrix<m, n, F> new_mat = matrix<m, n, F>::id();
 
 	for (int i = 0; i < pow; i++)
 	{
@@ -164,7 +164,7 @@ Matrix<m, n, F> Matrix<m, n, F>::operator^(const int &pow) const
 }
 
 template <int m, int n, typename F>
-bool Matrix<m, n, F>::operator==(const Matrix<m, n, F> &other) const
+bool matrix<m, n, F>::operator==(const matrix<m, n, F> &other) const
 {
 	for (int i = 0; i < m * n; i++)
 	{
@@ -176,14 +176,14 @@ bool Matrix<m, n, F>::operator==(const Matrix<m, n, F> &other) const
 }
 
 template <int m, int n, typename F>
-bool Matrix<m, n, F>::operator!=(const Matrix<m, n, F> &other) const
+bool matrix<m, n, F>::operator!=(const matrix<m, n, F> &other) const
 {
 	return !(*this == other);
 }
 
 // other
 template <int m, int n, typename F>
-void Matrix<m, n, F>::print() const
+void matrix<m, n, F>::print() const
 {
 	for (int i = 0; i < m * n; i++)
 	{
@@ -198,9 +198,9 @@ void Matrix<m, n, F>::print() const
 }
 
 template <int m, int n, typename F>
-Matrix<1, n, F> Matrix<m, n, F>::row(int i) const
+matrix<1, n, F> matrix<m, n, F>::row(int i) const
 {
-	Matrix<1, n, F> new_mat;
+	matrix<1, n, F> new_mat;
 
 	for (int j = 0; j < n; j++)
 	{
@@ -211,9 +211,9 @@ Matrix<1, n, F> Matrix<m, n, F>::row(int i) const
 }
 
 template <int m, int n, typename F>
-Matrix<m, 1, F> Matrix<m, n, F>::col(int j) const
+matrix<m, 1, F> matrix<m, n, F>::col(int j) const
 {
-	Matrix<m, 1, F> new_mat;
+	matrix<m, 1, F> new_mat;
 	for (int i = 0; i < m; i++)
 	{
 		new_mat[0][i] = mem[i * n + j];
@@ -223,11 +223,11 @@ Matrix<m, 1, F> Matrix<m, n, F>::col(int j) const
 }
 
 template <int m, int n, typename F>
-Matrix<m - 1, n - 1, F> Matrix<m, n, F>::submatrix(int row, int col) const
+matrix<m - 1, n - 1, F> matrix<m, n, F>::submatrix(int row, int col) const
 {
 	assert((row < m) && (col < n));
 
-	Matrix<m - 1, n - 1, F> new_mat;
+	matrix<m - 1, n - 1, F> new_mat;
 
 	if (m == 1 || n == 1)
 	{
@@ -254,9 +254,9 @@ Matrix<m - 1, n - 1, F> Matrix<m, n, F>::submatrix(int row, int col) const
 }
 
 template <int m, int n, typename F>
-Matrix<n, m, F> Matrix<m, n, F>::transpose() const
+matrix<n, m, F> matrix<m, n, F>::transpose() const
 {
-	Matrix<n, m, F> new_mat;
+	matrix<n, m, F> new_mat;
 
 	for (int i = 0; i < m; i++)
 	{
@@ -271,7 +271,7 @@ Matrix<n, m, F> Matrix<m, n, F>::transpose() const
 
 template <int m, int n, typename F>
 template <int k, int l>
-Matrix<m + k, n + l, F> Matrix<m, n, F>::direct_sum(const Matrix<k, l, F> &other) const
+matrix<m + k, n + l, F> matrix<m, n, F>::direct_sum(const matrix<k, l, F> &other) const
 {
 	F new_data[(m + k) * (n + l)] = {0};
 
@@ -292,12 +292,12 @@ Matrix<m + k, n + l, F> Matrix<m, n, F>::direct_sum(const Matrix<k, l, F> &other
 		}
 	}
 
-	return Matrix<m + k, n + l, F>(new_data);
+	return matrix<m + k, n + l, F>(new_data);
 }
 
 template <int m, int n, typename F>
 template <int k, int l>
-Matrix<m*k, n*l, F> Matrix<m, n, F>::kronecker_prod(const Matrix<k, l, F> &B) const {
+matrix<m*k, n*l, F> matrix<m, n, F>::kronecker_prod(const matrix<k, l, F> &B) const {
 	F new_data[m*k*n*l] = {0};
 
 	//pretend matrix 'A' is this instance
@@ -313,15 +313,15 @@ Matrix<m*k, n*l, F> Matrix<m, n, F>::kronecker_prod(const Matrix<k, l, F> &B) co
 		}
 	}
 
-	return Matrix<m*k,n*l>(new_data);
+	return matrix<m*k,n*l>(new_data);
 }
 
 template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::id()
+matrix<m, n, F> matrix<m, n, F>::id()
 {
-	static_assert(m == n, "Matrix must be square");
+	static_assert(m == n, "matrix must be square");
 
-	Matrix<m, n, F> identity;
+	matrix<m, n, F> identity;
 	for (int i = 0; i < n; i++)
 	{
 		identity[0][i * n + i] = 1;
@@ -332,7 +332,7 @@ Matrix<m, n, F> Matrix<m, n, F>::id()
 /******NON MEMBER FUNCTIONS*****/
 
 template <int m, int n, typename F>
-Matrix<m, n, F> gauss_elim(Matrix<m, n, F> A)
+matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 {
 	F data[m * n];
 	for (int i = 0; i < m * n; i++)
@@ -397,12 +397,12 @@ Matrix<m, n, F> gauss_elim(Matrix<m, n, F> A)
 		}
 	}
 
-	return Matrix<m, n, F>(&data[0]);
+	return matrix<m, n, F>(&data[0]);
 }
 
 /*Compute determinant via laplacian expansion*/
 template <int n, typename F>
-F det_laplace(Matrix<n, n, F> A)
+F det_laplace(matrix<n, n, F> A)
 {
 	if (n == 0)
 	{
@@ -425,7 +425,7 @@ F det_laplace(Matrix<n, n, F> A)
 }
 
 template <int n, typename F>
-Matrix<n, n, F> inv(Matrix<n, n, F> A)
+matrix<n, n, F> inv(matrix<n, n, F> A)
 {
 	F det = det_laplace(A);
 
@@ -440,15 +440,15 @@ Matrix<n, n, F> inv(Matrix<n, n, F> A)
  * Computes adjucate matrix.
  */
 template <int n, typename F>
-Matrix<n, n, F> adj(Matrix<n, n, F> A)
+matrix<n, n, F> adj(matrix<n, n, F> A)
 {
 
 	if (n == 1)
 	{
-		return Matrix<n, n, F>::id();
+		return matrix<n, n, F>::id();
 	}
 
-	Matrix<n, n, F> adjucate;
+	matrix<n, n, F> adjucate;
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
