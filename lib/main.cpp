@@ -1,37 +1,24 @@
 #include <iostream>
 #include <vector>
-#include "matrix.h"
+#include <complex>
+#include "matrix.hpp"
 
 using namespace std;
 
 int main()
 {
-	vector<vector<double>> arr = {
-		{1, 0, 2},
-		{2, 0, 1},
-		{3, 1, 0}};
 
-	const Matrix<3, 3> A(arr);
+	matrix<3, 2> A = {
+		73, 73, 
+		69, 69,
+		0, 1
+	};
 
-	Matrix<2, 3> B = {
-		0, 2, 1,
-		0, 1, 0};
+	matrix<3, 1> B = {1, 1, 1};
 
-	Matrix<3, 2> C = {
-		1, 1,
-		1, 1,
-		1, 1};
+	(A.kronecker_prod(B)).print();
 
-	C.print();
-	B.print();
-
-	auto X = C * B;
-
-	(Matrix<3,3>::id()*C).print();
-	//B.transpose().print();
-	//std::cout << det_laplace(X);
-
-	//system("pause");
+	// system("pause");
 
 	return 0;
 }

@@ -1,233 +1,125 @@
+#pragma once
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
+
 #include <initializer_list>
 #include <vector>
-#include "math.h"
-#include <iostream>
-#include <cassert>
-#include "matrix.h"
+#include <type_traits>
 
 using namespace std;
-// constructors
-template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix()
+
+template <int m, int n, typename F = double>
+class matrix
 {
-}
+protected:
+    F mem[m * n] = {0};
 
-template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(const initializer_list<F> &arr)
-{
-	int i = 0;
-	for (F x : arr)
-	{
-		mem[i] = x;
-		i++;
-	}
-}
+public:
+    matrix();
+    matrix(const matrix<m, n, F> &);
+    matrix(F *new_data);
+    matrix(const vector<vector<F>> &arr);
+    matrix(const initializer_list<F> &arr);
 
-template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(F *new_data)
-{
-	*this = Matrix();
+    inline F *operator[](int i) { return mem + i * n; }
+    inline const F *operator[](int i) const { return mem + i * n; }
+    matrix<m, n, F> operator+(const matrix<m, n, F> &B) const;
+    matrix<m, n, F> operator-(const matrix<m, n, F> &B) const;
+    matrix<m, n, F> operator*(const F &c) const;
+    template <int l>
+    matrix<m, l, F> operator*(const matrix<n, l, F> &B) const;
+    matrix<m, n, F> operator^(const int &pow) const;
+    /*Creates a new matrix by placing the two inputs side by side.*/
+    template <int l>
+    matrix<m, n + l, F> operator|(const matrix<m, l, F> &other) const;
+    bool operator==(const matrix<m, n, F> &other) const;
+    bool operator!=(const matrix<m, n, F> &other) const;
 
-	for (int i = 0; i < m * n; i++)
-	{
-		this->mem[i] = new_data[i];
-	}
-}
+    template <typename T>
+    operator matrix<m, n, T>() const
+    {
+        T new_data[m * n];
+        for (int i = 0; i < m * n; i++)
+        {
+            new_data[i] = static_cast<T>(mem[i]);
+        }
+        return matrix<m, n, T>(new_data);
+    }
 
-template <int m, int n, typename F>
-Matrix<m, n, F>::Matrix(const vector<vector<F>> &arr)
-{
-	if (arr.size() != m || arr[0].size() != n)
-	{
-		throw std::invalid_argument("Array dimensions must match matrix dimensions");
-	}
+    F *data() { return &(this->mem[0]); }
+    void print() const;
+    int rows() { return m; }
+    int cols() { return n; }
 
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			this->mem[i * n + j] = arr[i][j];
-		}
-	}
-}
+    matrix<1, n, F> row(int i) const;
+    matrix<m, 1, F> col(int j) const;
+    matrix<m - 1, n - 1, F> submatrix(int i, int j) const;
+    matrix<n, m, F> transpose() const;
+    template <int k, int l>
+    matrix<m + k, n + l, F> direct_sum(const matrix<k, l, F> &other) const;
+    template <int k, int l>
+    matrix<m*k,n*l,F> kronecker_prod(const matrix<k,l,F> &other) const;
 
-// operator overloads
+    static matrix<m, n, F> id();
 
-template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator+(const Matrix<m, n, F> &B) const
-{
-	Matrix<m, n, F> new_mat;
-	for (int i = 0; i < m * n; i++)
-	{
-		new_mat.mem[i] += this->mem[i] + B.mem[i];
-	}
+    // Don't really know how to avoid implementing this outside of class.
+    // This is so you can multiply from the right as well.
+    friend matrix<m, n, F> operator*(const F &c, const matrix<m, n, F> &B)
+    {
+        F new_data[m * n];
 
-	return new_mat;
-}
+        for (int i = 0; i < m * n; i++)
+        {
+            new_data[i] = B.mem[i] * c;
+        }
 
-template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator-(const Matrix<m, n, F> &B) const
-{
-	Matrix<m, n, F> new_mat;
-	for (int i = 0; i < m * n; i++)
-	{
-		new_mat.mem[i] += this->mem[i] - B.mem[i];
-	}
+        return matrix<m, n>(new_data);
+    }
+};
 
-	return new_mat;
-}
-
-template <int m, int n, typename F>
-Matrix<m, n, F> Matrix<m, n, F>::operator*(F const &c)
-{
-	Matrix<m, n, F> new_mat;
-	for (int i = 0; i < m * n; i++)
-	{
-		new_mat.mem[i] = mem[i] * c;
-	}
-
-	return new_mat;
-}
-
-template <int m, int n, typename F>
-template <int l>
-Matrix<m, l, F> Matrix<m, n, F>::operator*(const Matrix<n, l, F> &B) const
-{
-	F new_data[m * l] = {0};
-
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < l; j++)
-		{
-			for (int k = 0; k < n; k++)
-			{
-				new_data[i * l + j] += mem[i * n + k] * B[0][k * l + j];
-			}
-		}
-	}
-	return Matrix<m, l, F>(new_data);
-}
-
-template <int m, int n, typename F>
-bool Matrix<m, n, F>::operator==(const Matrix<m, n, F> &other) const
-{
-	for (int i = 0; i < m * n; i++)
-	{
-		if (mem[i] != other[0][i])
-		{
-			return false;
-		}
-		return true;
-	}
-}
-
-template <int m, int n, typename F>
-bool Matrix<m, n, F>::operator!=(const Matrix<m, n, F> &other) const
-{
-	return !(*this == other);
-}
-
-// other
-template <int m, int n, typename F>
-void Matrix<m, n, F>::print()
-{
-	for (int i = 0; i < m * n; i++)
-	{
-		std::cout << mem[i] << ' ';
-
-		if ((i + 1) % n == 0)
-		{
-			std::cout << '\n';
-		}
-	}
-	std::cout << '\n';
-}
-
-template <int m, int n, typename F>
-Matrix<1, n, F> Matrix<m, n, F>::row(int i) const
-{
-	Matrix<1, n, F> new_mat;
-
-	for (int j = 0; j < n; j++)
-	{
-		new_mat[0][j] = mem[i * n + j];
-	}
-
-	return new_mat;
-}
-
-template <int m, int n, typename F>
-Matrix<m, 1, F> Matrix<m, n, F>::col(int j) const
-{
-	Matrix<m, 1, F> new_mat;
-	for (int i = 0; i < m; i++)
-	{
-		new_mat[0][i] = mem[i * n + j];
-	}
-
-	return new_mat;
-}
-
-template <int m, int n, typename F>
-Matrix<m - 1, n - 1, F> Matrix<m, n, F>::submatrix(int row, int col) const
-{
-	assert((row < m) && (col < n));
-	Matrix<m - 1, n - 1, F> new_mat;
-	F *new_data = new_mat.data();
-
-	int k = 0;
-
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			if (!(i == row || j == col))
-			{
-				new_data[k] = mem[i * n + j];
-				k++;
-			}
-		}
-	}
-
-	return new_mat;
-}
-
-template <int m, int n, typename F>
-Matrix<n, m, F> Matrix<m, n, F>::transpose() const
-{
-	Matrix<n, m, F> new_mat;
-
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			new_mat[0][j * m + i] = mem[i * n + j];
-		}
-	}
-
-	return new_mat;
-}
-
-/******NON MEMBER FUNCTIONS*****/
-
-/*Compute determinant via laplacian expansion*/
+// needed to do this for base cases if matrix size gets reduced in recursive
+// function call
 template <int n, typename F>
-F det_laplace(Matrix<n, n, F> A)
+class matrix<0, n, F>
 {
-	if (n == 1)
-	{
-		return A[0][0];
-	}
+public:
+    F *operator[](int i) const
+    {
+        return nullptr;
+    }
+    F *data() { return nullptr; }
+    matrix<0, n, F> submatrix(int i, int j) const { return matrix<0, n>(); }
+};
 
-	F value = 0;
-	for (int i = 0; i < n; i++)
-	{
-		value += pow(-1, i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
-	}
+template <int n, typename F>
+class matrix<n, 0, F>
+{
+public:
+    F *operator[](int i) const
+    {
+        return nullptr;
+    }
+    F *data() { return nullptr; }
+    matrix<n, 0, F> submatrix(int i, int j) const { return matrix<n, 0>(); }
+};
 
-	return value;
-}
+template <typename F>
+class matrix<0, 0, F>
+{
+public:
+    F *operator[](int i) const
+    {
+        return nullptr;
+    }
+    F *data() { return nullptr; }
+    matrix<0, 0, F> submatrix(int i, int j) const { return matrix<0, 0>(); }
+};
+
+/*****NON MEMBER STUFF*****/
+
+template <int n, typename F>
+F det_laplace(matrix<n, n, F> A);
+
+#include "matrix.tpp"
 
 #endif
