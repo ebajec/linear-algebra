@@ -27,9 +27,9 @@ int main()
 
 	auto X = C * B;
 
-	X.print();
-	B.transpose().print();
-	std::cout << det_laplace(X);
+	(Matrix<3,3>::id()*C).print();
+	//B.transpose().print();
+	//std::cout << det_laplace(X);
 
 	//system("pause");
 
