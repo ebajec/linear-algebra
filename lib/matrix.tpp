@@ -1,4 +1,4 @@
-// this just contains implementations
+// this just contains implementation garbage
 #ifndef MATRIX_TPP
 #define MATRIX_TPP
 
