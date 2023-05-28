@@ -1,9 +1,10 @@
+// this just contains implementations
+#ifndef MATRIX_TPP
+#define MATRIX_TPP
+
 #include <initializer_list>
-#include <vector>
-#include <iostream>
 #include <cassert>
-#include "math.h"
-#include "matrix.hpp"
+#include <stdexcept>
 
 #define DBL_EPSILON 2.2204460492503131e-016
 
@@ -13,6 +14,14 @@ using namespace std;
 template <int m, int n, typename F>
 matrix<m, n, F>::matrix()
 {
+}
+
+template <int m, int n, typename F>
+matrix<m, n, F>::matrix(F val) {
+	for (int i = 0; i < m * n; i++)
+	{
+		mem[i] = val;
+	}
 }
 
 template <int m, int n, typename F>
@@ -43,23 +52,6 @@ matrix<m, n, F>::matrix(F *new_data)
 	for (int i = 0; i < m * n; i++)
 	{
 		this->mem[i] = new_data[i];
-	}
-}
-
-template <int m, int n, typename F>
-matrix<m, n, F>::matrix(const vector<vector<F>> &arr)
-{
-	if (arr.size() != m || arr[0].size() != n)
-	{
-		throw std::invalid_argument("Array dimensions must match matrix dimensions");
-	}
-
-	for (int i = 0; i < m; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			this->mem[i * n + j] = arr[i][j];
-		}
 	}
 }
 
@@ -181,7 +173,8 @@ bool matrix<m, n, F>::operator!=(const matrix<m, n, F> &other) const
 	return !(*this == other);
 }
 
-// other
+#ifndef MATRIX_DL_EXPORT
+#include <iostream>
 template <int m, int n, typename F>
 void matrix<m, n, F>::print() const
 {
@@ -196,6 +189,7 @@ void matrix<m, n, F>::print() const
 	}
 	std::cout << '\n';
 }
+#endif
 
 template <int m, int n, typename F>
 matrix<1, n, F> matrix<m, n, F>::row(int i) const
@@ -297,23 +291,28 @@ matrix<m + k, n + l, F> matrix<m, n, F>::direct_sum(const matrix<k, l, F> &other
 
 template <int m, int n, typename F>
 template <int k, int l>
-matrix<m*k, n*l, F> matrix<m, n, F>::kronecker_prod(const matrix<k, l, F> &B) const {
-	F new_data[m*k*n*l] = {0};
+matrix<m * k, n * l, F> matrix<m, n, F>::kronecker_prod(const matrix<k, l, F> &B) const
+{
+	F new_data[m * k * n * l] = {0};
 
-	//pretend matrix 'A' is this instance
-	for (int a_row = 0; a_row < m; a_row++) {
-		for (int a_col = 0; a_col < n; a_col++) {
-			for (int b_row = 0; b_row < k; b_row++) {
-				for (int b_col = 0; b_col < l; b_col++) {
+	// pretend matrix 'A' is this instance
+	for (int a_row = 0; a_row < m; a_row++)
+	{
+		for (int a_col = 0; a_col < n; a_col++)
+		{
+			for (int b_row = 0; b_row < k; b_row++)
+			{
+				for (int b_col = 0; b_col < l; b_col++)
+				{
 
-					int index = a_row*k*n*l + b_row*n*l + a_col*l + b_col;
-					new_data[index] = this->mem[a_row*n + a_col]*B[b_row][b_col];
+					int index = a_row * k * n * l + b_row * n * l + a_col * l + b_col;
+					new_data[index] = this->mem[a_row * n + a_col] * B[b_row][b_col];
 				}
 			}
 		}
 	}
 
-	return matrix<m*k,n*l>(new_data);
+	return matrix<m * k, n * l>(new_data);
 }
 
 template <int m, int n, typename F>
@@ -327,6 +326,19 @@ matrix<m, n, F> matrix<m, n, F>::id()
 		identity[0][i * n + i] = 1;
 	}
 	return identity;
+}
+
+template <int m, int n, typename F>
+matrix<m, n, F> matrix<m, n, F>::random(F max_val, int fineness)
+{
+	F data[m * n];
+
+	for (int i = 0; i < m * n; i++)
+	{
+		data[i] = max_val * ((rand() % fineness) / (double)fineness);
+	}
+
+	return matrix<m, n, F>(data);
 }
 
 /******NON MEMBER FUNCTIONS*****/
@@ -389,7 +401,7 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 				F val = data[row * n + col];
 				if (abs(val) > DBL_EPSILON)
 				{
-					row_add(row_nonzero, row, -val * pow(top_entry_val, -1));
+					row_add(row_nonzero, row, -val * (1 / top_entry_val));
 				}
 			}
 			// go to next row once we're done
@@ -404,6 +416,13 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 template <int n, typename F>
 F det_laplace(matrix<n, n, F> A)
 {
+
+	auto alt_sign = [](int k)
+	{
+		int sign = k % 2;
+		return 1 - 2 * sign;
+	};
+
 	if (n == 0)
 	{
 		return 1;
@@ -418,7 +437,7 @@ F det_laplace(matrix<n, n, F> A)
 
 		for (int i = 0; i < n; i++)
 		{
-			value += pow(-1, i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
+			value += alt_sign(i) * (A[0][i] * det_laplace(A.submatrix(0, i)));
 		}
 		return value;
 	}
@@ -429,8 +448,9 @@ matrix<n, n, F> inv(matrix<n, n, F> A)
 {
 	F det = det_laplace(A);
 
-	if (det > DBL_EPSILON)
+	if (det < DBL_EPSILON)
 	{
+		throw std::invalid_argument("Matrix must be invertible")
 	}
 
 	return pow(det, -1) * adj(A);
@@ -440,8 +460,13 @@ matrix<n, n, F> inv(matrix<n, n, F> A)
  * Computes adjucate matrix.
  */
 template <int n, typename F>
-matrix<n, n, F> adj(matrix<n, n, F> A)
+matrix<n, n, F> adj(const matrix<n, n, F> &A)
 {
+	auto alt_sign = [](int k)
+	{
+		int sign = k % 2;
+		return 1 - 2 * sign;
+	};
 
 	if (n == 1)
 	{
@@ -453,8 +478,79 @@ matrix<n, n, F> adj(matrix<n, n, F> A)
 	{
 		for (int j = 0; j < n; j++)
 		{
-			adjucate[j][i] = pow(-1, i + j) * det_laplace(A.submatrix(i, j));
+			adjucate[j][i] = alt_sign(i + j) * det_laplace(A.submatrix(i, j));
 		}
 	}
 	return adjucate;
 }
+
+template <int n, typename F>
+F dot(const matrix<n, 1, F> &A, const matrix<n, 1, F> &B)
+{
+	F val = 0;
+	for (int i = 0; i < n; i++)
+	{
+		F a = A[0][i];
+		F b = B[0][i];
+		val += a * b;
+	}
+
+	return val;
+}
+
+template <typename F>
+matrix<3, 3, F> cross_mat(const matrix<3, 1, F> &v)
+{
+	return matrix<3, 3, F>({0, v[2][0] * -1, v[1][0],
+							v[2][0], 0, v[0][0] * -1,
+							v[1][0] * -1, v[0][0], 0});
+}
+
+template <typename F>
+matrix<3, 1, F> cross(const matrix<3, 1, F> &v, const matrix<3, 1, F> &w)
+{
+	return cross_mat(v) * w;
+}
+
+template <int n, typename F>
+matrix<n, 1, F> normalize(const matrix<n, 1, F> &v)
+{
+	return v * (1 / sqrt(dot(v, v)));
+}
+
+
+template <typename F,typename T>
+matrix<3, 3, F> rot_axis(matrix<3, 1, F> k, T theta)
+{
+	k = normalize(k);
+	return matrix<3, 3, F>::id() * cos(theta) + cross_mat(k) * sin(theta) + (k * (k.transpose())) * (1 - cos(theta));
+}
+
+template <typename F,typename T>
+matrix<3, 3, F> rotatexy(T angle)
+{
+	return matrix<3, 3, F>(
+		{cos(angle), -sin(angle), 0,
+		 sin(angle), cos(angle), 0,
+		 0, 0, 1});
+}
+
+template <typename F,typename T>
+matrix<3, 3, F> rotatexz(T angle)
+{
+	return matrix<3, 3, F>(
+		{cos(angle), 0, -sin(angle),
+		 0, 1, 0,
+		 sin(angle), 0, cos(angle)});
+}
+
+template <typename F,typename T>
+matrix<3, 3, F> rotateyz(T angle)
+{
+	return matrix<3, 3, F>(
+		{1, 0, 0,
+		 0, cos(angle), -sin(angle),
+		 0, sin(angle), cos(angle)});
+}
+
+#endif
