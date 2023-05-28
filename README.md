@@ -5,4 +5,4 @@ some matrix decompositions.
 
 **compile.bat** Compiles and runs main.cpp.
 
-**matrix.hpp:** Matrix class with overloaded operators for addition, subtraction, multiplicaiton, comparison, and indexing. Also includes determinants and gaussian elimination.  Size is **not** dynamic and determined at compile time.
+**matrix.hpp:** Template (m x n)-matrix class with overloaded operators for addition, subtraction, multiplicaiton, comparison, and indexing. Also includes determinants and gaussian elimination.  Size is **not** dynamic and determined at compile time.
