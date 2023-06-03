@@ -12,7 +12,9 @@ protected:
 	F mem[m * n] = {0};
 
 public:
+	/*Default constructor initializes all values to 0*/
 	matrix();
+	/*Initializes all values of matrix to val*/
 	matrix(F val);
 	matrix(const matrix<m, n, F> &);
 	matrix(F *new_data);
@@ -137,6 +139,7 @@ template <int n, typename F>
 matrix<n, 1, F> normalize(const matrix<n, 1, F> &v);
 
 //produces matrix for rotation about an axis k in R3 by angle theta
+
 template <typename F,typename T>
 matrix<3, 3, F> rot_axis(matrix<3, 1, F> k, T theta);
 

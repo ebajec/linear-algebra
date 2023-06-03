@@ -5,7 +5,7 @@
 #include <complex>
 #include "matrix.hpp"
 
-#define PI 3.141592654
+#define PI 3.14159265359
 
 using namespace std;
 
@@ -23,7 +23,7 @@ int main()
 
 	vec3 B = {1,0,0};
 
-	mat3 R = rot_axis(A,PI/4);
+	mat3 R = rotatexy<double>(PI/4);
 
 	for (int i = 0; i < 9; i++) {
 		std::cout << "B is: \n";

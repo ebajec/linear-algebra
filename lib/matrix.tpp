@@ -1,10 +1,12 @@
-// this just contains implementations
+// this just contains implementation garbage
 #ifndef MATRIX_TPP
 #define MATRIX_TPP
 
 #include <initializer_list>
 #include <cassert>
+#include <iostream>
 #include <stdexcept>
+#include "math.h"
 
 #define DBL_EPSILON 2.2204460492503131e-016
 
@@ -107,7 +109,7 @@ matrix<m, l, F> matrix<m, n, F>::operator*(const matrix<n, l, F> &B) const
 		{
 			for (int k = 0; k < n; k++)
 			{
-				new_data[i * l + j] += mem[i * n + k] * B[0][k * l + j];
+				new_data[i * l + j] += mem[i * n + k] * B[k * l][j];
 			}
 		}
 	}
@@ -160,9 +162,8 @@ bool matrix<m, n, F>::operator==(const matrix<m, n, F> &other) const
 {
 	for (int i = 0; i < m * n; i++)
 	{
-		if (mem[i] != other[0][i])
-
-			return false;
+		//I know this is not perfect, but what is
+		if (abs(mem[i] - other[0][i]) >  DBL_EPSILON) return false;
 	}
 	return true;
 }
@@ -173,8 +174,7 @@ bool matrix<m, n, F>::operator!=(const matrix<m, n, F> &other) const
 	return !(*this == other);
 }
 
-#ifndef MATRIX_DL_EXPORT
-#include <iostream>
+
 template <int m, int n, typename F>
 void matrix<m, n, F>::print() const
 {
@@ -189,7 +189,6 @@ void matrix<m, n, F>::print() const
 	}
 	std::cout << '\n';
 }
-#endif
 
 template <int m, int n, typename F>
 matrix<1, n, F> matrix<m, n, F>::row(int i) const
@@ -370,7 +369,7 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 			data[r1 * n + i] = data[r2 * n + i];
 			data[r2 * n + i] = temp;
 		}
-		return;
+		return;	
 	};
 
 	int row_nonzero = 0;
@@ -379,7 +378,7 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 		F *top_entry = data + row_nonzero * n + col;
 
 		// this attempts to swap rows and make top_entry nonzero
-		if (abs(*top_entry) <= DBL_EPSILON)
+		if (abs(*top_entry) < DBL_EPSILON)
 		{
 			for (int row = row_nonzero; row < m; row++)
 			{
@@ -448,9 +447,9 @@ matrix<n, n, F> inv(matrix<n, n, F> A)
 {
 	F det = det_laplace(A);
 
-	if (det < DBL_EPSILON)
+	if (abs(det) < DBL_EPSILON)
 	{
-		throw std::invalid_argument("Matrix must be invertible")
+		throw std::invalid_argument("Matrix must be invertible");
 	}
 
 	return pow(det, -1) * adj(A);
