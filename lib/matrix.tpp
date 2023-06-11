@@ -109,7 +109,7 @@ matrix<m, l, F> matrix<m, n, F>::operator*(const matrix<n, l, F> &B) const
 		{
 			for (int k = 0; k < n; k++)
 			{
-				new_data[i * l + j] += mem[i * n + k] * B[k * l][j];
+				new_data[i * l + j] += mem[i * n + k] * B[k][j];
 			}
 		}
 	}
