@@ -1,4 +1,7 @@
-/*This file is just for running tests*/
+/*This file is just for running tests
+
+I might add some better tests
+*/
 
 #include <iostream>
 #include <vector>
@@ -23,12 +26,12 @@ int main()
 
 	vec3 B = {1,0,0};
 
-	mat3 R = rotatexy<double>(PI/4);
+	mat3 R = rotatexy<float>(PI/4);
 
 	for (int i = 0; i < 9; i++) {
 		std::cout << "B is: \n";
-		B.print();
-		B = R*B;
+		mat3 X = mat3::id();
+		(X).print();
 		std::cout << "\n";
 	}
 	return 0;
