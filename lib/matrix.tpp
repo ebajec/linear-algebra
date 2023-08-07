@@ -6,11 +6,17 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
+#include <list>
 #include "math.h"
 
 #define DBL_EPSILON 2.2204460492503131e-016
 
 using namespace std;
+
+template<typename T>
+int sign(T val) {
+	return (val > 0) - (val < 0);
+}
 
 // constructors
 template <int m, int n, typename F>
@@ -262,6 +268,23 @@ matrix<n, m, F> matrix<m, n, F>::transpose() const
 	return new_mat;
 }
 
+
+template <int m, int n, typename F>
+void matrix<m, n, F>::mult_row(int dest, F c) {
+	for (int col = 0; col < n; col++) {
+		mem[dest*n + col] *= c; 
+	}
+	return;
+}
+
+template <int m, int n, typename F>
+void matrix<m, n, F>::add_to_row(int dest, matrix<1, n, F> r) {
+	for (int col = 0; col < n; col++) {
+		mem[dest*n + col] += r[0][col]; 
+	}
+	return;
+}
+
 template <int m, int n, typename F>
 template <int k, int l>
 matrix<m + k, n + l, F> matrix<m, n, F>::direct_sum(const matrix<k, l, F> &other) const
@@ -409,6 +432,36 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A)
 	}
 
 	return matrix<m, n, F>(&data[0]);
+}
+
+template <int m, int n, typename F>
+matrix<m, n, F> rref(matrix<m, n, F> A) {
+	matrix<m,n,F> gaussian = gauss_elim(A);
+
+	list<int> leading_ones;
+
+	for (int row = 0; row < m; row++) {
+		for (int col = row; col < n; col++) {
+
+			F leading = gaussian[row][col];
+			if (abs(leading) > 1.192092896e-07F) {
+				gaussian.mult_row(row,1/leading);
+				leading_ones.push_front(col);
+				break;
+			} 
+		}
+	}
+	leading_ones.reverse();
+	int one_row = 0;
+	for (int one_col : leading_ones) {
+		for (int row = one_row - 1; row >= 0; row--) {
+			gaussian.add_to_row(row,-((F)1)*gaussian[row][one_col]*gaussian.row(one_row));
+		}
+		one_row++;
+	}
+
+	return gaussian;
+
 }
 
 /*Compute determinant via laplacian expansion*/

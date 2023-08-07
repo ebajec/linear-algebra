@@ -19,20 +19,39 @@ vec3 n = vec3::random(10);
 vec3 l = vec3::random(10);
 vec3 l_o = vec3::random(10);
 
+template <int m, int n, typename F>
+bool test_rref(matrix<m,n,F> A) {
+	std::cout << "\nRREF test running:\n";
+	std::cout << "original is:\n";
+	A.print();
+	std::cout << "RREF is:\n";
+	auto RREF = rref(A);
+	RREF.print();
+	std::cout << "solution is:\n";
+	auto sol = RREF.col(n-1);
+	sol.print();
+
+	std::cout << "difference is\n";
+	auto diff = A.col(n-1) - matrix<m,m,F>(A)*sol;
+	diff.print();
+
+	bool success = dot(diff,diff) < 1.192092896e-07F;
+	return success;
+}
 
 int main()
 {
 	vec3 A = {0, 0, 1};
 
-	vec3 B = {1,0,0};
+	matrix<3,4> B = {
+		1,0,1,1,
+		3,5,0,0,
+		4,0,2,3
+		};
 
-	mat3 R = rotatexy<float>(PI/4);
+	test_rref(B);
 
-	for (int i = 0; i < 9; i++) {
-		std::cout << "B is: \n";
-		mat3 X = mat3::id();
-		(X).print();
-		std::cout << "\n";
-	}
+
+
 	return 0;
 }

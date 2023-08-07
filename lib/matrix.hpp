@@ -3,6 +3,7 @@
 #define MATRIX_HPP
 
 #include <initializer_list>
+#include <algorithm>
 
 using namespace std;
 
@@ -12,6 +13,7 @@ protected:
 	F mem[m * n] = {0};
 
 public:
+	
 	/*Default constructor initializes all values to 0*/
 	matrix();
 	/*Initializes all values of matrix to val*/
@@ -45,6 +47,19 @@ public:
 		return matrix<m, n, T>(new_data);
 	}
 
+    template <int k, int l>
+	operator matrix<k, l, F>() const
+	{
+		matrix<k,l,F> new_mat = matrix<k,l,F>::id();
+
+        for (int i = 0; i < min(k,m); i++) {
+            for (int j = 0; j < min(l,n); j++) {
+                new_mat[i][j] = mem[i*n + j];
+            }
+        }
+        return new_mat;
+	}
+
 	F *data() { return &(this->mem[0]); }
 	int rows() { return m; }
 	int cols() { return n; }
@@ -52,6 +67,8 @@ public:
 	matrix<m, 1, F> col(int j) const;
 	matrix<m - 1, n - 1, F> submatrix(int i, int j) const;
 	matrix<n, m, F> transpose() const;
+	void mult_row(int dest, F c);
+	void add_to_row(int dest, matrix<1, n, F> r);
 	template <int k, int l>
 	matrix<m + k, n + l, F> direct_sum(const matrix<k, l, F> &other) const;
 	template <int k, int l>
@@ -116,6 +133,9 @@ public:
 
 template <int m, int n, typename F>
 matrix<m, n, F> gauss_elim(matrix<m, n, F> A);
+
+template <int m, int n, typename F>
+matrix<m, n, F> rref(matrix<m, n, F> A);
 
 template <int n, typename F>
 F det_laplace(matrix<n, n, F> A);
