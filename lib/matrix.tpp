@@ -13,11 +13,6 @@
 
 using namespace std;
 
-template<typename T>
-int sign(T val) {
-	return (val > 0) - (val < 0);
-}
-
 // constructors
 template <int m, int n, typename F>
 matrix<m, n, F>::matrix()
