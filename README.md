@@ -1,9 +1,4 @@
 # linear-algebra
+This is essentially just a (m*n)-matrix class with the operations one would expect, along with some other stuff.  
 
-Some basic linear algebra tools for general use. 
-
-**compile.bat** Compiles and runs main.cpp.
-
-**main.cpp:** This is not a part of the library; it's just for running tests.
-
-**matrix.hpp:** Template (m x n)-matrix class with overloaded operators for addition, subtraction, multiplicaiton, comparison, indexing, and concatenation. Also includes determinants and gaussian elimination, along with most other things one would expect.  Size is **not** dynamic and determined at compile time.
+Matrix size is technically static, but compile time evaluation allows size-changing operations like multiplication to work.    
