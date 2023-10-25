@@ -1,8 +1,3 @@
-/*This file is just for running tests
-
-I might add some better tests
-*/
-
 #include <iostream>
 #include <vector>
 #include <complex>
@@ -18,7 +13,6 @@ using mat3 = matrix<3, 3>;
 vec3 n = vec3::random(10);
 vec3 l = vec3::random(10);
 vec3 l_o = vec3::random(10);
-
 
 
 bool split_test() {

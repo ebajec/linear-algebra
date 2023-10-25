@@ -6,7 +6,10 @@
 #include <algorithm>
 #include <list>
 
-using namespace std;
+//min for constexpr arguments
+inline constexpr int min_t(const int a, const int b) {
+	return (a<=b)*a + (a>b)*b;
+}
 
 template <int m, int n, typename F = double> class matrix
 {
@@ -21,7 +24,7 @@ public:
 	matrix(F val);
 	matrix(const matrix<m, n, F> &);
 	matrix(F *new_data);
-	matrix(const initializer_list<F> &arr);
+	matrix(const std::initializer_list<F> &arr);
 
 	inline F *operator[](int i) { return mem + i * n; }
 	inline const F *operator[](int i) const { return mem + i * n; }
@@ -57,8 +60,8 @@ public:
 			new_mat = matrix<k,k,F>::id();
 		}
 
-        for (int i = 0; i < min(k,m); i++) {
-            for (int j = 0; j < min(l,n); j++) {
+        for (int i = 0; i < min_t(k,m); i++) {
+            for (int j = 0; j < min_t(l,n); j++) {
 				if (i == j) new_mat[i][j] = 1;
                 new_mat[i][j] = mem[i*n + j];
             }
@@ -80,7 +83,7 @@ public:
 	matrix<m * k, n * l, F> kronecker_prod(const matrix<k, l, F> &other) const;
 	matrix<m - 1, n - 1, F> submatrix(int i, int j) const;
 	template<int k>
-	pair<matrix<m,k,F>,matrix<m,n-k,F>> split();
+	std::pair<matrix<m,k,F>,matrix<m,n-k,F>> split();
 	static matrix<m, n, F> id();
 	static matrix<m, n, F> random(F max_val = 100, int fineness = 1000);
 
@@ -143,7 +146,7 @@ matrix<m, n, F> gauss_elim(matrix<m, n, F> A);
 
 /* Computes reduced row echelon form of matrix.*/
 template <int m, int n, typename F>
-matrix<m, n, F> rref(matrix<m, n, F> A,list<int>* ones = nullptr);
+matrix<m, n, F> rref(matrix<m, n, F> A,std::list<int>* ones = nullptr);
 
 template <int n, typename F>
 F det_laplace(matrix<n, n, F> A);
