@@ -3,7 +3,7 @@ Template (m*n)-matrix class with most standard operations, along with some other
 
 **Includes:**
   - Standard matrix arithmetic: addition, multiplication, inversion, etc
-  - Common matrix operations: det(), adj(), ker(), transpose (still need special case for complex matrices),
+  - Common matrix operations: det(), adj(), ker(), transpose (need to add special case for complex matrices),
   - Gaussian elimination and solving systems of equations
   - A few vector operations
   - R^3 rotation matrices, rotation about an axis
